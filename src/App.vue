@@ -3,8 +3,8 @@ import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 onLaunch(() => {
   console.log("App Launch");
 });
-onShow(() => {
-  console.log("App Show");
+onShow((options) => {
+  console.log("App Show", options);
 });
 onHide(() => {
   console.log("App Hide");

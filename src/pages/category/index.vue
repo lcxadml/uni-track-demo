@@ -1,39 +1,38 @@
 <template>
   <view class="content">
-    <image class="logo" src="/static/logo.png" />
-    <view class="text-area">
-      <text class="title">菜单页面</text>
+    <text class="title">菜单页面</text>
+
+
+    <view class="container">
+      <view class="item" :data-track-id="`product_${index}`" id="product_123" v-for="(value, index) in list">
+        {{ value }}
+      </view>
     </view>
   </view>
+
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
+
+const list = ref<string[]>(new Array(30).fill(undefined).map((_, index) => { return `第${index + 1}项内容` }))
+
+
+onMounted(() => {
+  setTimeout(() => {
+    list.value = [...list.value, ...new Array(30).fill(undefined).map((_, index) => { return `第${index + 30 + 1}项内容` })]
+  }, 3000);
+})
+
+
+
 </script>
 
 <style>
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo {
-  height: 200rpx;
-  width: 200rpx;
-  margin-top: 200rpx;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 50rpx;
-}
-
-.text-area {
-  display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
+.item {
+  width: 200px;
+  height: 200px;
+  background: skyblue;
+  margin-bottom: 20px;
 }
 </style>

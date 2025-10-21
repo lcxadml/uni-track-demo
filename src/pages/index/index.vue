@@ -2,14 +2,26 @@
   <view class="content">
     <image class="logo" src="/static/logo.png" />
     <view class="text-area">
-      <text class="title">{{ title }}</text>
+      <button @click="handleToHome">去首页</button>
+      <button @click="handleToCategory">去菜单</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-const title = ref('Hello')
+
+const handleToHome = () => {
+  uni.navigateTo({
+    url: '/pages/home/index'
+  })
+}
+
+const handleToCategory = () => {
+  uni.navigateTo({
+    url: '/pages/category/index'
+  })
+}
+
 </script>
 
 <style>
