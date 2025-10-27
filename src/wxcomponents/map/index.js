@@ -14,17 +14,8 @@ function initChart(canvas, width, height, dpr) {
   echarts.registerMap("henan", geoJson);
 
   const option = {
-    tooltip: {
-      trigger: "item",
-      formatter: "{b}: {c}",
-    },
+    animation: false,
 
-    toolbox: {
-      show: true,
-      orient: "vertical",
-      left: "right",
-      top: "center",
-    },
     series: [
       {
         type: "map",
@@ -39,6 +30,8 @@ function initChart(canvas, width, height, dpr) {
             },
           },
         },
+        roam: true,
+        zoom: 1.5,
         itemStyle: {
           normal: {
             borderColor: "#389BB7",
@@ -48,21 +41,38 @@ function initChart(canvas, width, height, dpr) {
             borderColor: "#389BB7",
             areaColor: "#389BB7",
           },
+          blur: {
+            label: { show: false },
+            itemStyle: {
+              areaColor: {
+                image: "#389BB7",
+                repeat: "repeat",
+              },
+            },
+          },
+          select: {
+            itemStyle: {
+              areaColor: "#000000", // 点击选中状态
+            },
+          },
         },
         data: [
           {
             name: "郑州市",
             itemStyle: {
               normal: {
+                color: "#000000",
                 borderColor: "#389BB7",
                 areaColor: "#389BB7",
               },
               emphasis: {
+                color: "#000000",
                 areaColor: {
                   image:
                     "/static/pngtree-floating-realistic-clouds-png-image_8623463.png", // 支持为 HTMLImageElement, HTMLCanvasElement，不支持路径字符串
                   repeat: "repeat", // 是否平铺，可以是 'repeat-x', 'repeat-y', 'no-repeat'
                 },
+                color: "#000",
                 borderWidth: 0,
               },
             },
