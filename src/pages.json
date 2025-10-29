@@ -13,7 +13,7 @@
 			}
 		},
 		{
-			"path": "pages/home/index",
+			"path": "pages/test-canvas/test-canvas",
 			"style": {
 				"navigationBarTitleText": "uni-app"
 			}
@@ -35,8 +35,8 @@
 				"text": "主页"
 			},
 			{
-				"pagePath": "pages/home/index",
-				"text": "首页"
+				"pagePath": "pages/test-canvas/test-canvas",
+				"text": "canvas"
 			},
 			{
 				"pagePath": "pages/category/index",
