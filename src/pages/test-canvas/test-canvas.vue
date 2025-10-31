@@ -43,6 +43,7 @@ onMounted(async () => {
     // drawImages();
   });
   initTextCanvas().then(_ => {
+
     startTextAnimation();
   });
 
@@ -181,6 +182,18 @@ const startOpacityAni = () => {
   opacityAni();
 }
 
+const drawBgText = () => {
+
+  ctx.value!.font = "30px serif";
+  ctx.value!.textBaseline = 'top';
+  const textMetrics = ctx.value!.measureText('Hello world112');
+  const textWidth = textMetrics.width;
+  ctx.value!.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.value!.fillRect(10, 10, textWidth, 30);
+  ctx.value!.fillText("Hello world", 10, 10);
+
+}
+
 
 const startImageAnimation = () => {
 
@@ -197,6 +210,7 @@ const drawText = () => {
   textCtx.value?.save();
   textCtx.value.font = `${baseFontSize * textScale}px serif`;
   textCtx.value.textBaseline = 'middle';
+
   textCtx.value?.fillText('李存兴啊', 150, 100);
   textCtx.value?.restore();
 
@@ -227,7 +241,7 @@ const startTextAnimation = (
 ) => {
   textScale = 1; textGrow = true;
   // @ts-expect-error
-  textCanvas.requestAnimationFrame(drawText);
+  textCanvas.requestAnimationFrame(drawText); drawBgText();
 }
 
 </script>
