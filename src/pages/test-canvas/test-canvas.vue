@@ -6,6 +6,10 @@
   </view>
 
   <button @click="startTextAnimation">动一下</button>
+  <button @click="startImageAnimation">动一下图片</button>
+  <button @click="handleAllStart">一起动吧</button>
+  <button @click="startOpacityAni">透明度</button>
+
 
 </template>
 
@@ -15,9 +19,13 @@ import { ref, onMounted, getCurrentInstance } from 'vue'
 const ctx = ref<CanvasRenderingContext2D>()          // 2d context
 const textCtx = ref<CanvasRenderingContext2D>();
 
-let canvas1: CanvasRenderingContext2D, textCanvas: CanvasRenderingContext2D;
 
-let textGrow = true, textScale = 1;
+let canvas1: HTMLCanvasElement, textCanvas: HTMLCanvasElement;
+
+
+let textGrow = true, textScale = 1, loadedImg;
+
+const loadedImageRef = ref<HTMLImageElement>();
 
 // 准备 9 张测试图片（替换成你的地址）
 const images = [
@@ -27,10 +35,12 @@ const images = [
 // 获取当前组件实例（在 setup 中需要这样传 this 给 selectorQuery）
 const vm = getCurrentInstance()?.proxy
 
-onMounted(() => {
+onMounted(async () => {
   // 等 DOM 渲染
-  initCanvas().then(_ => {
-    drawImages();
+
+  initCanvas().then(async _ => {
+    await loadImages();
+    // drawImages();
   });
   initTextCanvas().then(_ => {
     startTextAnimation();
@@ -46,7 +56,7 @@ async function initCanvas() {
 
   // 图片canvas
   return new Promise((resolve, reject) => {
-    query.select('#myCanvas').fields({ node: true, size: true }).exec((res) => {
+    query.select('#myCanvas').fields({ node: true, size: true }, () => { }).exec((res) => {
       const nodeInfo = res[0]
       const nativeCanvas = nodeInfo.node;
       // nodeInfo.width/height 是元素在页面上的尺寸（单位 px）
@@ -59,8 +69,11 @@ async function initCanvas() {
       resolve(null);
     });
   })
+}
 
-
+const handleAllStart = () => {
+  startTextAnimation();
+  startImageAnimation();
 }
 
 const initTextCanvas = async () => {
@@ -87,6 +100,7 @@ function loadImage(src: string): Promise<any> {
 
     // createImage() 必须在拿到 canvas node 后调用
     let img: any = null
+    // @ts-expect-error
     img = canvas1.createImage()
 
     img.onload = () => resolve(img)
@@ -105,28 +119,85 @@ function loadImage(src: string): Promise<any> {
   })
 }
 
+const loadImages = async () => {
+  loadedImg = await loadImage(images[0]);
+  loadedImageRef.value = loadedImg;
+}
+
 async function drawImages() {
-  const context = ctx.value
-  const imgs = await loadImage(images[0])
-  context.drawImage(imgs, 100, 100, 200, 200)
-  if (typeof context.draw === 'function') {
-    try {
-      context.draw()
-    } catch (e) {
-      // 有些基座不需要 draw，这里捕获避免崩溃
-      console.warn('context.draw 调用失败：', e)
+  ctx.value?.clearRect(0, 0, 1300, 1300);
+  ctx.value?.save();
+  ctx.value!.globalAlpha = 2 - textScale;
+  ctx.value!.drawImage(loadedImageRef.value as HTMLImageElement, 100, 100, textScale * 200, textScale * 200);
+
+  ctx.value?.restore();
+
+  if (textGrow) {
+    textScale += 0.05;
+  } else {
+    textScale -= 0.05;
+  }
+
+
+  if (textScale > 1.5) {
+    textGrow = false;
+  } else {
+    if (textScale <= 1) {
+      return;
     }
   }
+  // @ts-expect-error
+  canvas1.requestAnimationFrame(drawImages);
+}
+
+const opacityAni = () => {
+  ctx.value?.clearRect(0, 0, 1300, 1300);
+  ctx.value?.save();
+  ctx.value!.globalAlpha = 2 - textScale;
+  ctx.value!.drawImage(loadedImageRef.value as HTMLImageElement, 100, 100, 200, 200);
+
+  ctx.value?.restore();
+
+  if (textGrow) {
+    textScale += 0.005;
+  } else {
+    textScale -= 0.005;
+  }
+
+
+  if (textScale > 1.3) {
+    textGrow = false;
+  } else {
+    if (textScale <= 1) {
+      textGrow = true;
+    }
+  }
+  // @ts-expect-error
+  canvas1.requestAnimationFrame(opacityAni);
+}
+
+const startOpacityAni = () => {
+  textScale = 1; textGrow = true;
+  opacityAni();
+}
+
+
+const startImageAnimation = () => {
+
+  textScale = 1; textGrow = true;
+  // @ts-expect-error
+  canvas1.requestAnimationFrame(drawImages);
+
 }
 
 const drawText = () => {
+  const baseFontSize = 48;
   if (!textCtx.value) return;
   textCtx.value.clearRect(0, 0, 1300, 1300);
   textCtx.value?.save();
-  textCtx.value.font = '48px serif';
-
-  textCtx.value.scale(textScale, textScale);
-  textCtx.value?.fillText('李存兴啊', 100, 100);
+  textCtx.value.font = `${baseFontSize * textScale}px serif`;
+  textCtx.value.textBaseline = 'middle';
+  textCtx.value?.fillText('李存兴啊', 150, 100);
   textCtx.value?.restore();
 
 
@@ -147,6 +218,7 @@ const drawText = () => {
     }
   }
 
+  // @ts-expect-error
   textCanvas.requestAnimationFrame(drawText);
 
 }
@@ -154,6 +226,7 @@ const drawText = () => {
 const startTextAnimation = (
 ) => {
   textScale = 1; textGrow = true;
+  // @ts-expect-error
   textCanvas.requestAnimationFrame(drawText);
 }
 
@@ -167,5 +240,6 @@ const startTextAnimation = (
 
 button {
   margin-top: 20rpx;
+
 }
 </style>
