@@ -4,7 +4,7 @@
 
 
     <view class="container">
-      <view class="item" :data-track-id="`product_${index}`" id="product_123" v-for="(value, index) in list">
+      <view class="item" @click="console.log(33333333)" :data-track-id="`product_${index}`" id="product_123" v-for="(value, index) in list">
         {{ value }}
       </view>
     </view>

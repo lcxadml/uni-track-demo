@@ -5,7 +5,12 @@ export default {
 
   onShow(...options) {
     const page = getCurrentPages()[0];
-    console.log("=====onShow", page, options, this.$scope);
+    console.log(
+      "=====onShow",
+      this.$scope?.addEventListener,
+      options,
+      this.$scope
+    );
 
     // 页面展示时自动上报PV
     if (this.$scope && this.$scope.page && this.$scope.page.route) {
@@ -13,6 +18,23 @@ export default {
       tracker.pv(route);
     }
   },
+
+  onLoad() {
+    const oldTap = this.onTap;
+    console.log(333333, this.onTap);
+
+    this.onTap = (e) => {
+      const id = e.currentTarget.dataset.trackId;
+
+      console.log(1111111);
+
+      if (id) {
+        this.reportClick(id);
+      }
+      oldTap && oldTap(e);
+    };
+  },
+
   onHide() {
     const page = getCurrentPages()[0];
     console.log("=====onHide", page);
@@ -46,6 +68,8 @@ export default {
   methods: {
     // 通用点击上报方法
     $trackClick(id) {
+      console.log(11111 + "id");
+
       const route = this.$scope?.page?.route || "";
       tracker.click(id, route);
     },
